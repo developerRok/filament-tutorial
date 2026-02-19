@@ -3,15 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoryResource extends Resource
 {
@@ -39,9 +38,36 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('slug'),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                                         ->label('Detaylı Gör')
+                                         ->modalHeading('Kategori Detayları')
+                                         ->icon('heroicon-o-eye')
+                                         ->color('info'),
+                Tables\Actions\EditAction::make(),
             ]);
     }
-
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Kategori Bilgileri')
+                                            ->schema([
+                                                Infolists\Components\TextEntry::make('name')
+                                                                              ->label('Kategori Adı')
+                                                                              ->weight('bold')
+                                                                              ->size('lg'),
+                                                Infolists\Components\TextEntry::make('slug')
+                                                                              ->label('URL Uzantısı')
+                                                                              ->badge()
+                                                                              ->color('success'),
+                                                Infolists\Components\TextEntry::make('created_at')
+                                                                              ->label('Oluşturulma Tarihi')
+                                                                              ->dateTime(),
+                                            ])->columns(2)
+            ]);
+    }
     public static function getRelations(): array
     {
         return [
